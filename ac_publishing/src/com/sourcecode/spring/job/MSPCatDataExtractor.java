@@ -14,7 +14,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
+import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -31,10 +34,10 @@ import com.sourcecode.standalone.FillMspElectronicsColumns;
 
 @Component
 public class MSPCatDataExtractor {
-    
+	//private static Logger logger = Logger.getLogger("com.gargoylesoftware");
     static {
-        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
-        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+    	
+    	
     }
     
     static String idBase = "ACNEW";
@@ -57,7 +60,7 @@ public class MSPCatDataExtractor {
         System.out.println("Starting at " + System.currentTimeMillis());
         getMspUrlsWithInsertedFlag(sections);
         processInsertedUrlMap();
-        FillMspElectronicsColumns.execute();        
+        FillMspElectronicsColumns.execute(sections);        
         System.out.println("Ending at " + System.currentTimeMillis());
         
     }
@@ -117,6 +120,8 @@ public class MSPCatDataExtractor {
     }
     
     class DataExtractor implements Callable {
+    	
+    	
         String query;
         List<String> params;
         
@@ -183,12 +188,14 @@ public class MSPCatDataExtractor {
                     e.printStackTrace();
                     continue;
                 }
+                
+                List<WebElement> listLogo = driver.findElementsByXPath("//img[contains(@class,'prc-grid__logo')]");
                 // fetch for each vendor of the product
-                for (int i = 1; i <= 11; i++) {
+                for (int i = 1; i <= listLogo.size(); i++) {
                     try {
                         MspElectronics obj = new MspElectronics();
                         obj.setImageMsp(image);
-                        obj.setProductId(productid);
+                        obj.setProductId(currentUrl.getProductId());
                         obj.setSection(section);
                         obj.setModel(model);
                         // getting vendor url
@@ -197,7 +204,7 @@ public class MSPCatDataExtractor {
                                                 
                         //getting price
                         elem = driver.findElement(By.xpath("/html/body/div[4]/div[4]/div[1]/div[1]/div[1]/div[" + i + "]/div[1]/div[3]/div[1]/span"));
-                        obj.setPrice(elem.getText());
+                        obj.setPrice(elem.getText().replaceAll("[^0-9.]", ""));
                         
                         
                         processSet.add(obj);

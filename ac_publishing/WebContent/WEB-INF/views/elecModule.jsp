@@ -26,8 +26,10 @@
 		<span>
 		<form:select path="section" multiple="true" items="${categoryList}">
 		</form:select>
-		<form:hidden path="subModuleName" value = "${modelName}"/>
+		<form:hidden path="subModuleName" value = "${modelName}"/><br />
+		<form:radiobutton path="allCats" value="allCats" label="All categories"/>
 		<input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />
+		
 		<br /><br /><br /><br /><br /><br />
 		</span>
 	</ul>

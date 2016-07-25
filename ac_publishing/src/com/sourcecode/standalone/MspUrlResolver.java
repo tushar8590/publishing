@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 
@@ -60,7 +61,7 @@ public class MspUrlResolver {
         java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF); 
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
     }
-    private static String host = "jdbc:mysql://localhost:3306/aapcorjr_dbaapcompare9";
+    private static String host = "jdbc:mysql://localhost:3306/aapcompare";
     private static String userName = "root";
     private static String password = "";
     private static Connection conn;
@@ -106,7 +107,12 @@ public class MspUrlResolver {
 			
 		
 		}
-		
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException e) {
+            System.out.println(e);
+        }
 		System.out.println("Shutting down ececutor");
 
     }
@@ -136,7 +142,7 @@ public class MspUrlResolver {
 				urlMap = new HashMap<>();
 				while (rs.next()) {
 					String getProductUrl = "select * from msp_electronics where menu_level2 = '"
-							+ rs.getString(1) + "' and url_mapped = 'F' LIMIT 500";
+							+ rs.getString(1) + "' and url_mapped = 'F'";
 					ResultSet rsProductUrl = stmt2.executeQuery(getProductUrl);
 					urlList = new ArrayList<>();
 					while (rsProductUrl.next()) {

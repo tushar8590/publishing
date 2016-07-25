@@ -40,7 +40,7 @@
 		destroy-method="close">
 		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<beans:property name="url"
-			value="jdbc:mysql://localhost:3306/aapcorjr_dbaapcompare9" />
+			value="jdbc:mysql://localhost:3306/aapcompare" />
 		<beans:property name="username" value="root" />
 		<beans:property name="password" value="" />
 	</beans:bean>

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -97,7 +98,7 @@ public class MSPUrlExtractor {
         
         
         
-        ExecutorService executor = Executors.newFixedThreadPool(3);
+        ExecutorService executor = Executors.newFixedThreadPool(10);
         s_msp = new LinkedHashSet<>();
         
         Set<Future<Set<MspProductUrl>>> futureSet = new HashSet<Future<Set<MspProductUrl>>>();
@@ -189,6 +190,22 @@ public class MSPUrlExtractor {
             driver.get(baseUrl);
             System.out.println("Running for Page 1 ");
             
+            
+            List<WebElement> listTh = driver.findElementsByXPath("//a[contains(@class,'prdct-item__name')]");
+            for(int i = 0; i < listTh.size();i++){
+                     WebElement elem = listTh.get(i);
+                     productUrl =  elem.getAttribute("href").toString(); 
+                     
+                     MspProductUrl mspProdUrl = new MspProductUrl();
+                     mspProdUrl.setUrl(productUrl);
+                     mspProdUrl.setSection( this.section);
+                     mspProdUrl.setProductId("elecaap");
+                     mspProdUrl.setStatus("i");
+                     s_msp_threadLoacal.add(mspProdUrl);
+            } 
+            
+            
+            /*
             for (int i = 1; i <= 51; i++) {
                 try {
                    
@@ -217,26 +234,21 @@ public class MSPUrlExtractor {
                     continue;
                 }
             }
-            
-            System.out.println("For Other pages Limit " + limit);
+            */
+            System.out.println("For All pages Limit " + limit);
             
             // for the otherUrls
             for (int j = 2; j <= limit; j++) {
                 System.out.println("Running for Page " + j);
                 driver.get(otherUrls + j + ".html");
-                for (int i = 1; i <= 48; i++) {
-                    
+               // for (int i = 1; i <= 48; i++) {
+                 listTh = driver.findElementsByXPath("//a[contains(@class,'prdct-item__name')]");
+                for(int i = 0; i < listTh.size();i++){
+                         WebElement elem = listTh.get(i);
+                         productUrl =  elem.getAttribute("href").toString(); 
+                
                     try {
                         
-                         if(driver.findElements(By.xpath("/html/body/div[4]/div[3]/div[1]/div[4]/div[2]/div[1]/div["+i+"]/div[2]/a")).size() != 0)
-                        productUrl = driver.findElement(By.xpath("/html/body/div[4]/div[3]/div[1]/div[3]/div[2]/div[1]/div[" + i + "]/div[2]/a")).getAttribute("href");
-                                                                  
-                         else if(driver.findElements(By.xpath("/html/body/div[4]/div[3]/div[1]/div[3]/div[2]/div[1]/div["+i+"]/div[2]/a")).size() != 0)
-                         productUrl = driver.findElement(By.xpath("/html/body/div[4]/div[3]/div[1]/div[3]/div[2]/div[1]/div["+i+"]/div[2]/a")).getAttribute("href");
-                        
-                        // if (!allExistingUrl.contains(productUrl)) {
-                        // this.saveData(productUrl, section);
-                        // }
                          MspProductUrl mspProdUrl = new MspProductUrl();
                          mspProdUrl.setUrl(productUrl);
                          mspProdUrl.setStatus("i");

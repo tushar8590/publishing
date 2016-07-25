@@ -44,7 +44,18 @@ public class NewMenu {
     @Transient
     private String subModuleName;
     
-    public String getCategory() {
+    @Transient
+    private String allCats;
+    
+    public String getAllCats() {
+		return allCats;
+	}
+
+	public void setAllCats(String allCats) {
+		this.allCats = allCats;
+	}
+
+	public String getCategory() {
         return category;
     }
 

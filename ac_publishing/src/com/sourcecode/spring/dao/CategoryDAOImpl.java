@@ -30,7 +30,7 @@ public class CategoryDAOImpl implements CategoryDAO{
     public List<String> getCategoryList() {
        try{
             session = this.sessionFactory.openSession();
-           Query query = session.createQuery("Select distinct m.section from NewMenu m where section = 'Smart Watches' order by m.section"); 
+           Query query = session.createQuery("Select distinct m.section from NewMenu m  order by m.section"); 
            List<String> list = query.list();
            return list;
        }catch(HibernateException e){

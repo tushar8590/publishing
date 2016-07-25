@@ -1,6 +1,9 @@
 package com.sourcecode.spring;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -83,19 +86,24 @@ public class ModuleController {
     @RequestMapping(value = "startELectronicsDataUpdate", method=RequestMethod.POST)
     public ModelAndView startELectronicsDataUpdate(@ModelAttribute("newMenuAttribute") NewMenu menu){
         ModelAndView model = new ModelAndView();
+        List<String> sections = null;
+        if(menu.getAllCats() != null && menu.getAllCats()  != ""){
+        	sections = getAllSections();
+        }else{
         System.out.println(menu.getSection());
-        
+         sections = Arrays.asList(menu.getSection());
+        }
         if(menu.getSubModuleName().equalsIgnoreCase(FunctionConstants.URLExtractor)){
-            mspUrlExtractor.processData(Arrays.asList(menu.getSection()));
+            mspUrlExtractor.processData(sections);
             model.addObject("processName", "MSP Url Extractor");
             model.setViewName("ProcessRunning");
         }else if(menu.getSubModuleName().equalsIgnoreCase(FunctionConstants.CatDataExtractor)){
-            mspCatDataExtractor.processData(Arrays.asList(menu.getSection()));
+            mspCatDataExtractor.processData(sections);
             model.addObject("processName", "Cat Data Extractor");
             model.setViewName("ProcessRunning");
             
         }else if(menu.getSubModuleName().equalsIgnoreCase(FunctionConstants.SpecLoader)){
-            specLoader.processData(Arrays.asList(menu.getSection()));
+            specLoader.processData(sections);
             model.addObject("processName", "Spec Loader");
             model.setViewName("ProcessRunning");
         }else if(menu.getSubModuleName().equalsIgnoreCase(FunctionConstants.urlResolver)){
@@ -108,7 +116,12 @@ public class ModuleController {
        
          return model;
     }
-    
+    private List<String> getAllSections(){
+    	 
+    	Map<String,String> catsMap = categoryService.getCategoryList();
+    	List<String> sections = new ArrayList(catsMap.keySet());
+    	return sections;
+    }
     @RequestMapping(value = "startJob", method=RequestMethod.GET)
     public ModelAndView startCronJob(@ModelAttribute("userAttribute") User user,HttpServletRequest request, SessionStatus sessionStatus){
         ModelAndView model = new ModelAndView();

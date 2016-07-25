@@ -21,7 +21,7 @@ public class FillMSPProductURlColumns {
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF); 
 	        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
 	    }
-	    private static String host = "jdbc:mysql://localhost:3306/aapcorjr_dbaapcompare9";
+	    private static String host = "jdbc:mysql://localhost:3306/aapcompare";
 	    private static String userName = "root";
 	    private static String password = "";
 	    private static Connection con;

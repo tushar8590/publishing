@@ -18,7 +18,7 @@ public class FillMspElectronicsColumns {
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF); 
 	        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
 	    }
-	    private static String host = "jdbc:mysql://localhost:3306/aapcorjr_dbaapcompare9";
+	    private static String host = "jdbc:mysql://localhost:3306/aapcompare";
 	    private static String userName = "root";
 	    private static String password = "";
 	    private static Connection con;
@@ -28,7 +28,7 @@ public class FillMspElectronicsColumns {
 
 	private ResultSet rs;
 
-	public static void execute(){
+	public static void execute(List<String> sections){
 		try{
 			System.out.println("Starting FillMSPElectronicColumns");
 			// Load the Driver class. 
@@ -86,7 +86,7 @@ public class FillMspElectronicsColumns {
 					String[] parts = value.split("\\*");
 					//saveData(model,parts[0],parts[1],spec_url,section);
 					List<String> params = new ArrayList<>();
-					query = "update msp_electronics set  product_id = concat(product_id,sno), menu_level1 = ?, menu_level2 = ?, brand = SUBSTRING_INDEX(model, ' ', 1), website = SUBSTRING_INDEX(url, 'store=',-1),image = CONCAT('app_product_images_normal/aapcompare_',REPLACE(model,' ','-'),'.jpg'), image_zoom = CONCAT('app_product_images_zoom/aapcompare_',REPLACE(model,' ','-'),'_big.jpg' ),image_small = CONCAT('app_product_images_small/aapcompare_',REPLACE(model,' ','-'),'small.jpg') where resolved_url is null";
+					query = "update msp_electronics set  menu_level1 = ?, menu_level2 = ?, brand = SUBSTRING_INDEX(model, ' ', 1), website = SUBSTRING_INDEX(url, 'store=',-1),image = CONCAT('app_product_images_normal/aapcompare_',REPLACE(model,' ','-'),'.jpg'), image_zoom = CONCAT('app_product_images_zoom/aapcompare_',REPLACE(model,' ','-'),'_big.jpg' ),image_small = CONCAT('app_product_images_small/aapcompare_',REPLACE(model,' ','-'),'small.jpg') where resolved_url is null";
 
 					params.add(parts[0]);
 					params.add(parts[1]);
@@ -97,6 +97,16 @@ public class FillMspElectronicsColumns {
 
 			}
 
+			// updating the status i to null in msp_product_url table
+			StringBuilder updateMspQuery = new StringBuilder("update msp_product_url set status = null where section in (");
+			sections.forEach(s->{
+				updateMspQuery.append("?,");
+			});
+			updateMspQuery.deleteCharAt(updateMspQuery.lastIndexOf(","));
+			updateMspQuery.append(")");
+			
+			upsertData(updateMspQuery.toString(),sections);
+			
 			System.out.println(columnMappingMap.size());
 
 		} catch (SQLException e) {
