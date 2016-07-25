@@ -144,7 +144,7 @@ public class MSPCatDataExtractor {
             this.section = section;
             this.productid = id;
             params = new ArrayList<>();
-            driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_8);
+            driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_11);
         }
         
         @Override

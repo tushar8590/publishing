@@ -179,7 +179,7 @@ public class MSPUrlExtractor {
             this.otherUrls = otherUrl;
             this.section = section;
             this.limit = Integer.parseInt(limit);
-            driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_3_6);
+            driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_11);
             params = new ArrayList<>();
            
         }

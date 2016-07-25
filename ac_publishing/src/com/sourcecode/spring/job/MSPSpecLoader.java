@@ -254,14 +254,14 @@ public class MSPSpecLoader {
         DataExtractor(String section,List<MspProductUrl> specUrlList){
             this.section = section;
             this.specUrlList = specUrlList;
-            driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_3_6);
+            driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_11);
         }
         @Override
         public  List<MspProductUrl> call() throws Exception {
             System.out.println("I got size " + specUrlList.size());
             specUrlList.forEach((m)->{
                 StringBuilder prdSpec = new StringBuilder();
-                driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_3_6);
+                driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_11);
                 driver.get(m.getSpecURL());
                 
                 String  header = "";

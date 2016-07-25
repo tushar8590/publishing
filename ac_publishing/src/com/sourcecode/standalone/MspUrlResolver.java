@@ -91,7 +91,7 @@ public class MspUrlResolver {
         
     	MspUrlResolver mspSpecExtractor = new MspUrlResolver();
 		mspSpecExtractor.getUrls();
-		HtmlUnitDriver driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_3_6);
+		HtmlUnitDriver driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_11);
 		ExecutorService executor = Executors.newFixedThreadPool(6);
 		List<Future<String>> list = new ArrayList<Future<String>>();
 
@@ -233,7 +233,7 @@ public class MspUrlResolver {
 				currentUrlObject = itr.next();
 				
 				try {
-					driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_3_6);
+					driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_11);
 					id = currentUrlObject.getId();
 					oldUrl = currentUrlObject.getOldUrl();
 					website = currentUrlObject.getWebsite();
