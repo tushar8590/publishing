@@ -198,6 +198,7 @@ public class MSPCatDataExtractor {
                         obj.setProductId(currentUrl.getProductId());
                         obj.setSection(section);
                         obj.setModel(model);
+                        obj.setMspModel(currentUrl.getModel());
                         // getting vendor url
                         WebElement elem = driver.findElement(By.xpath("/html/body/div[4]/div[4]/div[1]/div[1]/div[1]/div[" + i + "]/div[1]/div[4]/div"));
                         obj.setUrl(elem.getAttribute("data-url"));

@@ -29,6 +29,10 @@ public class MspElectronics {
     private String rating;
     @Column(name = "model")
     private String model;
+    
+    @Column(name = "msp_model")
+    private String mspModel;
+    
     private String brand;
     
 
@@ -245,6 +249,14 @@ public class MspElectronics {
 
     public void setTempFlag(String tempFlag) {
         this.tempFlag = tempFlag;
+    }
+
+    public String getMspModel() {
+        return mspModel;
+    }
+
+    public void setMspModel(String mspModel) {
+        this.mspModel = mspModel;
     }
 
 
