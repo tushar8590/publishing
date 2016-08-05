@@ -33,6 +33,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.sourcecode.spring.model.MspProductUrl;
 import com.sourcecode.spring.service.CategoryService;
 import com.sourcecode.standalone.FetchMaxPageNumberForCategory;
@@ -76,7 +79,7 @@ public class MSPUrlExtractor {
     public void processData(List<String> sections) {
         // running FetchMaxPageNumber
         
-        FetchMaxPageNumberForCategory.execute(sections);
+        //FetchMaxPageNumberForCategory.execute(sections);
         prepareDatabaseListOfUrls(sections);
         prepareURLMap(sections);
         processURLMap();
@@ -166,7 +169,7 @@ public class MSPUrlExtractor {
         String otherUrls;
         int limit;
         String productUrl;
-        HtmlUnitDriver driver;
+        WebClient webClient;
         String section;
         String keyword; // 2.html
         String query;
@@ -179,7 +182,10 @@ public class MSPUrlExtractor {
             this.otherUrls = otherUrl;
             this.section = section;
             this.limit = Integer.parseInt(limit);
-            driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_11);
+             webClient = new WebClient(BrowserVersion.CHROME);
+            webClient.getOptions().setCssEnabled(false);//if you don't need css
+            webClient.getOptions().setJavaScriptEnabled(false);//if you don't need js
+          
             params = new ArrayList<>();
            
         }
@@ -187,13 +193,13 @@ public class MSPUrlExtractor {
         @Override
         public Set<MspProductUrl> call() throws Exception {
             Set<MspProductUrl> s_msp_threadLoacal = new LinkedHashSet<>();
-            driver.get(baseUrl);
+            HtmlPage page = webClient.getPage(baseUrl);
             System.out.println("Running for Page 1 ");
             
             
-            List<WebElement> listTh = driver.findElementsByXPath("//a[contains(@class,'prdct-item__name')]");
+            List<HtmlAnchor> listTh =(List<HtmlAnchor>) page.getByXPath("//a[contains(@class,'prdct-item__name')]");
             for(int i = 0; i < listTh.size();i++){
-                     WebElement elem = listTh.get(i);
+                HtmlAnchor elem = listTh.get(i);
                      productUrl =  elem.getAttribute("href").toString(); 
                      
                      MspProductUrl mspProdUrl = new MspProductUrl();
@@ -240,11 +246,12 @@ public class MSPUrlExtractor {
             // for the otherUrls
             for (int j = 2; j <= limit; j++) {
                 System.out.println("Running for Page " + j);
-                driver.get(otherUrls + j + ".html");
+                //driver.get(otherUrls + j + ".html");
+                page = webClient.getPage(otherUrls + j + ".html");
                // for (int i = 1; i <= 48; i++) {
-                 listTh = driver.findElementsByXPath("//a[contains(@class,'prdct-item__name')]");
+                listTh =(List<HtmlAnchor>) page.getByXPath("//a[contains(@class,'prdct-item__name')]");
                 for(int i = 0; i < listTh.size();i++){
-                         WebElement elem = listTh.get(i);
+                    HtmlAnchor elem = listTh.get(i);
                          productUrl =  elem.getAttribute("href").toString(); 
                 
                     try {
@@ -264,7 +271,8 @@ public class MSPUrlExtractor {
                 }
             }
             
-            driver.close();
+           // driver.close();
+            webClient.closeAllWindows();
            
             return s_msp_threadLoacal;
         }

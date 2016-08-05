@@ -26,6 +26,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlDivision;
+import com.gargoylesoftware.htmlunit.html.HtmlHeading1;
+import com.gargoylesoftware.htmlunit.html.HtmlImage;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSpan;
 import com.sourcecode.spring.dao.MspCatDataDAOImpl;
 import com.sourcecode.spring.model.MspElectronics;
 import com.sourcecode.spring.model.MspProductUrl;
@@ -127,7 +133,8 @@ public class MSPCatDataExtractor {
         
         List<MspProductUrl> url;
         String section;
-        HtmlUnitDriver driver;
+       // HtmlUnitDriver driver;
+        WebClient webClient;
         String vendorUrl;
         String deliveryTime;
         String emi;
@@ -144,7 +151,10 @@ public class MSPCatDataExtractor {
             this.section = section;
             this.productid = id;
             params = new ArrayList<>();
-            driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_11);
+            //driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_8);
+            webClient = new WebClient(BrowserVersion.CHROME);
+            webClient.getOptions().setCssEnabled(false);//if you don't need css
+            webClient.getOptions().setJavaScriptEnabled(false);//if you don't need js
         }
         
         @Override
@@ -160,26 +170,15 @@ public class MSPCatDataExtractor {
                 
                 currentUrl = itr.next();
                 
-                driver.get(currentUrl.getUrl());
-                
+              //  driver.get(currentUrl.getUrl());
+                HtmlPage page = webClient.getPage(currentUrl.getUrl());
                 try {
                     
-                    if (driver.findElements(
-                        By.xpath("/html/body/div[4]/div[2]/div/div[1]/div[2]/img")).size() != 0) {
-                        image = driver.findElement(
-                            By.xpath("/html/body/div[4]/div[2]/div/div[1]/div[2]/img")).getAttribute(
-                            "src");
-                    }
-                    else if (driver.findElements(By.xpath("//*[@id='mspSingleImg']")).size() != 0) {
-                        image = driver.findElement(
-                            By.xpath("//*[@id='mspSingleImg']")).getAttribute(
-                            "src");
-                        
-                    }
+                    image = ((HtmlImage)page.getByXPath("//*[@class='prdct-dtl__img']").get(0)).getAttribute("src");
                     
                     //getting model
-                    List<WebElement> listTh = driver.findElementsByXPath("//h1[contains(@class,'prdct-dtl__ttl')]");
-                    model = listTh.get(0).getText();
+                    
+                    model = ((HtmlHeading1)page.getByXPath("//*[@class='prdct-dtl__ttl']").get(0)).asText(); 
                     
                 }
                 catch (Exception e) {
@@ -189,7 +188,7 @@ public class MSPCatDataExtractor {
                     continue;
                 }
                 
-                List<WebElement> listLogo = driver.findElementsByXPath("//img[contains(@class,'prc-grid__logo')]");
+                List<HtmlImage> listLogo = (List<HtmlImage>) page.getByXPath("//img[contains(@class,'prc-grid__logo')]");
                 // fetch for each vendor of the product
                 for (int i = 1; i <= listLogo.size(); i++) {
                     try {
@@ -198,14 +197,13 @@ public class MSPCatDataExtractor {
                         obj.setProductId(currentUrl.getProductId());
                         obj.setSection(section);
                         obj.setModel(model);
-                        obj.setMspModel(currentUrl.getModel());
                         // getting vendor url
-                        WebElement elem = driver.findElement(By.xpath("/html/body/div[4]/div[4]/div[1]/div[1]/div[1]/div[" + i + "]/div[1]/div[4]/div"));
+                        HtmlDivision elem = (HtmlDivision) page.getByXPath("/html/body/div[4]/div[4]/div[1]/div[1]/div[1]/div[" + i + "]/div[1]/div[4]/div").get(0);
                         obj.setUrl(elem.getAttribute("data-url"));
                                                 
                         //getting price
-                        elem = driver.findElement(By.xpath("/html/body/div[4]/div[4]/div[1]/div[1]/div[1]/div[" + i + "]/div[1]/div[3]/div[1]/span"));
-                        obj.setPrice(elem.getText().replaceAll("[^0-9.]", ""));
+                        HtmlSpan span = (HtmlSpan) page.getByXPath("/html/body/div[4]/div[4]/div[1]/div[1]/div[1]/div[" + i + "]/div[1]/div[3]/div[1]/span").get(0);
+                        obj.setPrice(span.asText().replaceAll("[^0-9.]", ""));
                         
                         
                         processSet.add(obj);
@@ -220,7 +218,8 @@ public class MSPCatDataExtractor {
             }
             System.out.println("Going to insert Master Set for Thread " + Thread.currentThread().getName());
             catDataService.saveMspUrlsToBeInserted(processSet);
-            driver.quit();
+            //driver.quit();
+            webClient.closeAllWindows();
             return processSet;
         }
         
