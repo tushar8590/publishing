@@ -95,8 +95,8 @@ public class FillMSPProductURlColumns {
 					params.add(parts[0]);
 					params.add(parts[1]);
 					params.add(section);
-					upsertData(query, params);
-					System.out.println("inserted");
+					if(upsertData(query, params))
+						System.out.println("inserted");
 					params.clear();
 				}
 
@@ -107,6 +107,7 @@ public class FillMSPProductURlColumns {
 			String updateQuery = "update msp_product_url set product_id  = CONCAT(product_id,sno) WHERE STATUS  = 'i' ";
 			stmt1.executeUpdate(updateQuery);
 			System.out.println("FillMSPProductURlColumns completed");
+			con.commit();
 		} catch (SQLException e) {
 		
 			e.printStackTrace();

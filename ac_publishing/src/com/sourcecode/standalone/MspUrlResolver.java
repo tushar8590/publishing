@@ -76,7 +76,7 @@ public class MspUrlResolver {
     public static void execute(){
         
         try{
-            System.out.println("Starting FillMSPProductURlColumns");
+            System.out.println("Starting URL Resolver");
 
             // Load the Driver class. 
             Class.forName("com.mysql.jdbc.Driver");

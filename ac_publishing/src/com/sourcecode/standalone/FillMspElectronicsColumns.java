@@ -86,7 +86,7 @@ public class FillMspElectronicsColumns {
 					String[] parts = value.split("\\*");
 					//saveData(model,parts[0],parts[1],spec_url,section);
 					List<String> params = new ArrayList<>();
-					query = "update msp_electronics set  menu_level1 = ?, menu_level2 = ?, brand = SUBSTRING_INDEX(model, ' ', 1), website = SUBSTRING_INDEX(url, 'store=',-1),image = CONCAT('app_product_images_normal/aapcompare_',REPLACE(model,' ','-'),'.jpg'), image_zoom = CONCAT('app_product_images_zoom/aapcompare_',REPLACE(model,' ','-'),'_big.jpg' ),image_small = CONCAT('app_product_images_small/aapcompare_',REPLACE(model,' ','-'),'small.jpg') where resolved_url is null";
+					query = "update msp_electronics set  menu_level1 = ?, menu_level2 = ?, brand = SUBSTRING_INDEX(model, ' ', 1), website = SUBSTRING_INDEX(url, 'store=',-1),image = CONCAT('aap_product_images_normal/aapcompare_',REPLACE(model,' ','-'),'.jpg'), image_zoom = CONCAT('aap_product_images_zoom/aapcompare_',REPLACE(model,' ','-'),'_big.jpg' ),image_small = CONCAT('aap_product_images_small/aapcompare_',REPLACE(model,' ','-'),'small.jpg') where resolved_url is null";
 
 					params.add(parts[0]);
 					params.add(parts[1]);

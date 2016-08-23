@@ -79,7 +79,7 @@ public class MSPUrlExtractor {
     public void processData(List<String> sections) {
         // running FetchMaxPageNumber
         
-        //FetchMaxPageNumberForCategory.execute(sections);
+        FetchMaxPageNumberForCategory.execute(sections);
         prepareDatabaseListOfUrls(sections);
         prepareURLMap(sections);
         processURLMap();
