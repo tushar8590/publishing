@@ -5,4 +5,5 @@ public class FunctionConstants {
     public static String CatDataExtractor = "Cat Data Extractor";
     public static String SpecLoader = "Spec Loader";
     public static String urlResolver = "Url Resolver";
+    public static String downloadImages = "Download Images";
 }

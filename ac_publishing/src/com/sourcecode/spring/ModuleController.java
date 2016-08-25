@@ -1,5 +1,6 @@
 package com.sourcecode.spring;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sourcecode.spring.job.CronJobExample;
+import com.sourcecode.spring.job.DownloadImages;
 import com.sourcecode.spring.job.MSPCatDataExtractor;
 import com.sourcecode.spring.job.MSPSpecLoader;
 import com.sourcecode.spring.job.MSPUrlExtractor;
@@ -41,13 +43,16 @@ public class ModuleController {
     
     @Autowired
     private MSPSpecLoader specLoader;
+    
+    @Autowired
+    private DownloadImages downloadImages;
 
     
     @RequestMapping(value = "loadDashboard")
     public ModelAndView loadDashboard(){
         ModelAndView model = new ModelAndView();
         model.addObject("module",new Module());
-        model.addObject("radioList",Arrays.asList(FunctionConstants.URLExtractor,FunctionConstants.CatDataExtractor,FunctionConstants.SpecLoader,FunctionConstants.urlResolver));
+        model.addObject("radioList",Arrays.asList(FunctionConstants.URLExtractor,FunctionConstants.CatDataExtractor,FunctionConstants.SpecLoader,FunctionConstants.urlResolver,FunctionConstants.downloadImages));
         model.setViewName("dashboard");
         return model;
     }
@@ -77,6 +82,11 @@ public class ModuleController {
             model.addObject("categoryList",categoryService.getCategoryList());
             model.addObject("modelName", FunctionConstants.urlResolver);
             model.setViewName("elecModule");
+        }else if(module.getModuleName().equalsIgnoreCase(FunctionConstants.downloadImages)){
+            model.addObject("newMenuAttribute", new NewMenu());
+            model.addObject("categoryList",categoryService.getCategoryList());
+            model.addObject("modelName", FunctionConstants.downloadImages);
+            model.setViewName("elecModule");
         }
         
         return model;
@@ -84,7 +94,7 @@ public class ModuleController {
     
     
     @RequestMapping(value = "startELectronicsDataUpdate", method=RequestMethod.POST)
-    public ModelAndView startELectronicsDataUpdate(@ModelAttribute("newMenuAttribute") NewMenu menu){
+    public ModelAndView startELectronicsDataUpdate(@ModelAttribute("newMenuAttribute") NewMenu menu) throws IOException{
         ModelAndView model = new ModelAndView();
         List<String> sections = null;
         if(menu.getAllCats() != null && menu.getAllCats()  != ""){
@@ -111,6 +121,10 @@ public class ModuleController {
             MspUrlResolver.execute();
             model.addObject("processName", "URL Resolver ");
             model.setViewName("ProcessRunning");
+        }else if(menu.getSubModuleName().equalsIgnoreCase(FunctionConstants.downloadImages)){
+        	downloadImages.processData(sections);
+             model.addObject("processName", "Download Images");
+             model.setViewName("ProcessRunning");
         }
         
        
