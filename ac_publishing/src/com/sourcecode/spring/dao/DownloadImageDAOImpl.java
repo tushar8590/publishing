@@ -27,7 +27,7 @@ public class DownloadImageDAOImpl implements DownloadImageDAO {
 		
 		 try{
 	            session = this.sessionFactory.openSession();
-	           Query query = session.createSQLQuery("Select distinct m.model, m.image_msp from msp_electronics m where m.model is not null "); 
+	           Query query = session.createSQLQuery("Select distinct REPLACE(m.msp_model,CONCAT('-',SUBSTRING_INDEX(m.msp_model,'-',-1)),'') AS model, m.image_msp from msp_electronics m where m.model is not null "); 
 	           List<Object> list = query.list();
 	          return list;
 	       }catch(HibernateException e){
