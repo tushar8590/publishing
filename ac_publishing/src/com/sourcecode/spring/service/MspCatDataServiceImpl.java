@@ -13,6 +13,8 @@ import com.sourcecode.spring.dao.MspCatDataDAO;
 import com.sourcecode.spring.model.MspElectronics;
 import com.sourcecode.spring.model.MspProductUrl;
 
+
+
 @Service
 public class MspCatDataServiceImpl implements MspCatDataService {
 
@@ -35,5 +37,9 @@ public class MspCatDataServiceImpl implements MspCatDataService {
         
         return mspCatDataDAO.saveMspUrlsToBeInserted(toBeInserted);
     }
+
+	
     
-}
+    
+    
+        }

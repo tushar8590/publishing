@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -41,6 +42,7 @@ import com.sourcecode.standalone.FillMspElectronicsColumns;
 @Component
 public class MSPCatDataExtractor {
 	//private static Logger logger = Logger.getLogger("com.gargoylesoftware");
+	
     static {
     	
     	
@@ -52,7 +54,7 @@ public class MSPCatDataExtractor {
     @Autowired
     private MspCatDataService catDataService;
     private Map<String, List<MspProductUrl>> mspProdUrlsToBeInsertedMap;
-    static int breakFactor = 12;
+    static int breakFactor = 1;
     private Set<MspElectronics> masterSetToBeInserted;
     
     public void getMspUrlsWithInsertedFlag(List<String> sections) {
@@ -73,7 +75,7 @@ public class MSPCatDataExtractor {
     
     public void processInsertedUrlMap() {
         System.out.println("Starting Master Process");
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+        ExecutorService executor = Executors.newCachedThreadPool();
         Set<Future<Set<MspElectronics>>> futureSet = new HashSet<Future<Set<MspElectronics>>>();
         mspProdUrlsToBeInsertedMap.forEach((k, v) -> {
             // subdivide the arraylist corresponding to each section k
@@ -81,8 +83,9 @@ public class MSPCatDataExtractor {
             int b = v.size() / breakFactor;
             
             for (int i = 0; i < breakFactor; i++) {
-                List<MspProductUrl> listn = v.subList(a, b);
-                
+               // List<MspProductUrl> listn = v.subList(a, b);
+            	 List<MspProductUrl> listn = new  ArrayList<>();
+            	 listn.addAll(v.subList(a, b));
                 a = b;
                 b = b + v.size() / breakFactor;
                 
@@ -91,13 +94,20 @@ public class MSPCatDataExtractor {
                 futureSet.add(future);
             }
             
-            List<MspProductUrl> listn = v.subList(a, v.size());
+            List<MspProductUrl> listn = v.subList(b, v.size()); // remaining all the products
             
             
              Callable<Set<MspElectronics>> callable = this.new DataExtractor(listn,k, idBase);
+             try {
+				callable.call();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+             /*
               Future<Set<MspElectronics>> future = executor.submit(callable);
               futureSet.add(future);
-             
+          */   
             
         });
         executor.shutdown();
@@ -153,8 +163,11 @@ public class MSPCatDataExtractor {
             params = new ArrayList<>();
             //driver = new HtmlUnitDriver(BrowserVersion.INTERNET_EXPLORER_8);
             webClient = new WebClient(BrowserVersion.CHROME);
+           // webClient = new WebClient(BrowserVersion.FIREFOX_24);
+
             webClient.getOptions().setCssEnabled(false);//if you don't need css
-            webClient.getOptions().setJavaScriptEnabled(false);//if you don't need js
+            webClient.getOptions().setJavaScriptEnabled(true);//if you don't need js
+            webClient.setJavaScriptTimeout(10000);
         }
         
         @Override
@@ -165,11 +178,11 @@ public class MSPCatDataExtractor {
             Iterator<MspProductUrl> itr = url.iterator();
             MspProductUrl currentUrl = null;
             
-            System.out.println("New Thread " + Thread.currentThread().getName());
+            System.out.println("New Thread " + Thread.currentThread().getName()+" with size "+this.url.size());
             while (itr.hasNext()) {
                 
                 currentUrl = itr.next();
-                
+               System.out.println(currentUrl.getUrl());
               //  driver.get(currentUrl.getUrl());
                 HtmlPage page = webClient.getPage(currentUrl.getUrl());
                 try {
@@ -188,7 +201,9 @@ public class MSPCatDataExtractor {
                     continue;
                 }
                 
-                List<HtmlImage> listLogo = (List<HtmlImage>) page.getByXPath("//img[contains(@class,'prc-grid__logo')]");
+               // List<HtmlImage> listLogo = (List<HtmlImage>) page.getByXPath("//img[contains(@class,'prc-grid__logo')]");
+                List<HtmlDivision> listLogo = (List<HtmlDivision>) page.getByXPath("//div[contains(@class,'prc-grid__logo')]");
+               // System.out.println("listLogo  "+listLogo.size());
                 // fetch for each vendor of the product
                 for (int i = 1; i <= listLogo.size(); i++) {
                     try {
@@ -206,19 +221,24 @@ public class MSPCatDataExtractor {
                         HtmlSpan span = (HtmlSpan) page.getByXPath("/html/body/div[4]/div[4]/div[1]/div[1]/div[1]/div[" + i + "]/div[1]/div[3]/div[1]/span").get(0);
                         obj.setPrice(span.asText().replaceAll("[^0-9.]", ""));
                         
-                        
                         processSet.add(obj);
                     }
                     catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        continue;
+                    	e.printStackTrace();
+                        //System.out.println(e.getMessage());
+                        //continue;
                         
                     }
                 }
-                
+                System.out.println(url);
+
+                //currentUrl.setStatus("D");
+                catDataService.saveMspUrlsToBeInserted(processSet);
+                processSet.clear();
             }
-            System.out.println("Going to insert Master Set for Thread " + Thread.currentThread().getName());
-            catDataService.saveMspUrlsToBeInserted(processSet);
+         //   System.out.println("Going to insert Master Set for Thread " + Thread.currentThread().getName()+" with records "+processSet.size());
+          //  catDataService.saveMspUrlsToBeInserted(processSet);
+
             //driver.quit();
             webClient.closeAllWindows();
             return processSet;

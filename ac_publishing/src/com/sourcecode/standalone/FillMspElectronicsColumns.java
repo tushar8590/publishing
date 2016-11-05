@@ -18,7 +18,7 @@ public class FillMspElectronicsColumns {
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF); 
 	        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
 	    }
-	    private static String host = "jdbc:mysql://localhost:3306/aapcompare";
+	    private static String host = "jdbc:mysql://localhost:3306/test";
 	    private static String userName = "root";
 	    private static String password = "";
 	    private static Connection con;
@@ -45,7 +45,7 @@ public class FillMspElectronicsColumns {
 		try {
 			String query ="SELECT DISTINCT menu_level1, menu_level2, section FROM new_menu ";
 
-			String sectionQuery ="SELECT DISTINCT section FROM msp_product_url WHERE STATUS = 'i'";
+			String sectionQuery ="SELECT DISTINCT section FROM msp_product_url WHERE status_flag = 'i'";
 
 			Statement stmt = con.createStatement();
 			Statement stmt1 = con.createStatement();
@@ -97,14 +97,14 @@ public class FillMspElectronicsColumns {
 			}
 
 			// updating the status i to null in msp_product_url table
-			StringBuilder updateMspQuery = new StringBuilder("update msp_product_url set status = null where section in (");
+			StringBuilder updateMspQuery = new StringBuilder("update msp_product_url set status_flag = 'd' where section in (");
 			sections.forEach(s->{
 				updateMspQuery.append("?,");
 			});
 			updateMspQuery.deleteCharAt(updateMspQuery.lastIndexOf(","));
 			updateMspQuery.append(")");
 			
-			upsertData(updateMspQuery.toString(),sections);
+			System.out.println(upsertData(updateMspQuery.toString(),sections));
 			
 			System.out.println(columnMappingMap.size());
 
@@ -125,20 +125,23 @@ public class FillMspElectronicsColumns {
 	public static boolean upsertData(String query,List<String> params){
         PreparedStatement pstmt  = null;
         boolean flag = false;
-        
+        System.out.println(query);
         try {
        
+        	System.out.println("Starting to update the status flag in msp_product_url");
             pstmt = con.prepareStatement(query);
             if(params!=null){
             int i = 1;
             for(String str: params){
-                pstmt.setString(i++, str);
+                pstmt.setString(i++, str.toLowerCase());
+                System.out.println(str);
             }
         }
         
 //          /System.out.println(query);
             if(pstmt.executeUpdate()>0){
                 flag = true;
+                con.commit();
             }
             
         } catch (SQLException e) {

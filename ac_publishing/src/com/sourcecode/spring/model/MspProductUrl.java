@@ -42,7 +42,7 @@ public class MspProductUrl {
     @Column(name = "spec_url")
     private String specURL;
     
-    @Column(name = "STATUS")
+    @Column(name = "status_flag")
     private String status;
 
     public int getSno() {

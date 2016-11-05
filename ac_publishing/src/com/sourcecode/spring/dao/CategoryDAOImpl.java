@@ -104,8 +104,10 @@ public class CategoryDAOImpl implements CategoryDAO{
             int i = 0;
             for(MspProductUrl prodUrl : toBedeleted){
                 session.delete(prodUrl);
+               
                 i++;
             }
+            session.flush();
             return i;
         }catch(HibernateException e){
             e.printStackTrace();

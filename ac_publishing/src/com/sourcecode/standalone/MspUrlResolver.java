@@ -259,14 +259,18 @@ public class MspUrlResolver {
                     });
 					
 					if(driver.getCurrentUrl().contains("?"))
-                    	resolvedUrl = new StringBuilder(driver.getCurrentUrl().substring(0, driver.getCurrentUrl().indexOf("?")));
+						if(website.equalsIgnoreCase("flipkart"))
+							resolvedUrl = new StringBuilder(driver.getCurrentUrl().substring(0, driver.getCurrentUrl().indexOf("&")));
+						else
+	                    	resolvedUrl = new StringBuilder(driver.getCurrentUrl().substring(0, driver.getCurrentUrl().indexOf("?")));
+
                     else
                     	resolvedUrl =  new StringBuilder(driver.getCurrentUrl());
                     
                     if(website.equalsIgnoreCase("amazon"))
                         resolvedUrl.append("?tag=aapcompare0f-21");
                     else if(website.equalsIgnoreCase("flipkart"))
-                        resolvedUrl.append("?affid=a123pp9aa");
+                        resolvedUrl.append("&affid=a123pp9aa");
                     else if(website.equalsIgnoreCase("infibeam"))
                         resolvedUrl.append("?trackId=a12");
                     else if(website.equalsIgnoreCase("snapdeal"))

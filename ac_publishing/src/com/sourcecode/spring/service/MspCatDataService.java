@@ -9,5 +9,6 @@ import com.sourcecode.spring.model.MspProductUrl;
 
 public interface MspCatDataService {
     public Map<String,List<MspProductUrl>> getMspUrlsWithInsertedFlag(List<String>  sections);
-    public int saveMspUrlsToBeInserted(Set<MspElectronics> toBeInserted);
+    public  int saveMspUrlsToBeInserted(Set<MspElectronics> toBeInserted);
+   // public void updateMspProdutUrlStatus(MspProductUrl productUrl);
 }

@@ -21,7 +21,7 @@ public class FillMSPProductURlColumns {
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF); 
 	        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
 	    }
-	    private static String host = "jdbc:mysql://localhost:3306/aapcompare";
+	    private static String host = "jdbc:mysql://localhost:3306/test";
 	    private static String userName = "root";
 	    private static String password = "";
 	    private static Connection con;
@@ -49,7 +49,7 @@ public class FillMSPProductURlColumns {
 		try {
 			String query ="SELECT DISTINCT menu_level1, menu_level2, section FROM new_menu ";
 
-			String sectionQuery ="SELECT DISTINCT section FROM msp_product_url WHERE STATUS = 'i'";
+			String sectionQuery ="SELECT DISTINCT section FROM msp_product_url WHERE status_flag = 'i'";
 
 			Statement stmt = con.createStatement();
 			Statement stmt1 = con.createStatement();
@@ -90,7 +90,7 @@ public class FillMSPProductURlColumns {
 					String[] parts = value.split("\\*");
 					//saveData(model,parts[0],parts[1],spec_url,section);
 					List<String> params = new ArrayList<>();
-					query = "update msp_product_url set model = SUBSTRING_INDEX(url,'/',-1),menu_level1 = ?,menu_level2 = ?,spec_url = REPLACE(REPLACE(CONCAT('http://www.mysmartprice.com/product/',SUBSTRING_INDEX(url,'/',-2),'-other#tab_spec'),'msf','mst'),'msp','mst'),temp_flag = 'f' where section = ? and status = 'i' and model is null";
+					query = "update msp_product_url set model = SUBSTRING_INDEX(url,'/',-1),menu_level1 = ?,menu_level2 = ?,spec_url = REPLACE(REPLACE(CONCAT('http://www.mysmartprice.com/product/',SUBSTRING_INDEX(url,'/',-2),'-other#tab_spec'),'msf','mst'),'msp','mst'),temp_flag = 'f' where section = ? and status_flag = 'i' and model is null";
 
 					params.add(parts[0]);
 					params.add(parts[1]);
@@ -104,7 +104,7 @@ public class FillMSPProductURlColumns {
 
 			//System.out.println(columnMappingMap.size());
 			// udpate product_id
-			String updateQuery = "update msp_product_url set product_id  = CONCAT(product_id,sno) WHERE STATUS  = 'i' ";
+			String updateQuery = "update msp_product_url set product_id  = CONCAT(product_id,sno) WHERE status_flag  = 'i' ";
 			stmt1.executeUpdate(updateQuery);
 			System.out.println("FillMSPProductURlColumns completed");
 			con.commit();
