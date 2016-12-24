@@ -135,7 +135,7 @@ public class FillMSPProductURlColumns {
             }
         }
         
-//          /System.out.println(query);
+            
             if(pstmt.executeUpdate()>0){
                 flag = true;
             }

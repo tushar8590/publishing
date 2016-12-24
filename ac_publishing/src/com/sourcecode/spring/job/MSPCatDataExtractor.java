@@ -34,6 +34,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSpan;
 import com.sourcecode.spring.dao.MspCatDataDAOImpl;
+import com.sourcecode.spring.job.MSPSpecLoader.DataExtractor;
 import com.sourcecode.spring.model.MspElectronics;
 import com.sourcecode.spring.model.MspProductUrl;
 import com.sourcecode.spring.service.MspCatDataService;
@@ -44,7 +45,8 @@ public class MSPCatDataExtractor {
 	//private static Logger logger = Logger.getLogger("com.gargoylesoftware");
 	
     static {
-    	
+    	java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
     	
     }
     
@@ -67,13 +69,14 @@ public class MSPCatDataExtractor {
     public void processData(List<String> sections) {
         System.out.println("Starting at " + System.currentTimeMillis());
         getMspUrlsWithInsertedFlag(sections);
-        processInsertedUrlMap();
+       int size =  processInsertedUrlMap();
+       System.out.println(size);
         FillMspElectronicsColumns.execute(sections);        
         System.out.println("Ending at " + System.currentTimeMillis());
         
     }
     
-    public void processInsertedUrlMap() {
+    public int processInsertedUrlMap() {
         System.out.println("Starting Master Process");
         ExecutorService executor = Executors.newCachedThreadPool();
         Set<Future<Set<MspElectronics>>> futureSet = new HashSet<Future<Set<MspElectronics>>>();
@@ -93,21 +96,13 @@ public class MSPCatDataExtractor {
                 Future<Set<MspElectronics>> future = executor.submit(callable);
                 futureSet.add(future);
             }
+            if(breakFactor > 1){
+            	List<MspProductUrl> listn = v.subList(b, v.size()); // remaining all the products
+            	Callable<Set<MspElectronics>> callable = this.new DataExtractor(listn,k, idBase);
+            	Future<Set<MspElectronics>> future = executor.submit(callable);
+                futureSet.add(future);
+            }
             
-            List<MspProductUrl> listn = v.subList(b, v.size()); // remaining all the products
-            
-            
-             Callable<Set<MspElectronics>> callable = this.new DataExtractor(listn,k, idBase);
-             try {
-				callable.call();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-             /*
-              Future<Set<MspElectronics>> future = executor.submit(callable);
-              futureSet.add(future);
-          */   
             
         });
         executor.shutdown();
@@ -133,6 +128,7 @@ public class MSPCatDataExtractor {
          * System.out.println("Going to insert Master Set");
          * catDataService.saveMspUrlsToBeInserted(masterSetToBeInserted);
          */
+        return futureSet.size();
     }
     
     class DataExtractor implements Callable {
@@ -166,8 +162,8 @@ public class MSPCatDataExtractor {
            // webClient = new WebClient(BrowserVersion.FIREFOX_24);
 
             webClient.getOptions().setCssEnabled(false);//if you don't need css
-            webClient.getOptions().setJavaScriptEnabled(true);//if you don't need js
-            webClient.setJavaScriptTimeout(10000);
+            webClient.getOptions().setJavaScriptEnabled(false);//if you don't need js
+            
         }
         
         @Override
@@ -230,7 +226,7 @@ public class MSPCatDataExtractor {
                         
                     }
                 }
-                System.out.println(url);
+               // System.out.println(url);
 
                 //currentUrl.setStatus("D");
                 catDataService.saveMspUrlsToBeInserted(processSet);
@@ -240,7 +236,9 @@ public class MSPCatDataExtractor {
           //  catDataService.saveMspUrlsToBeInserted(processSet);
 
             //driver.quit();
-            webClient.closeAllWindows();
+            
+            System.out.println("Ending loop");
+            //webClient.closeAllWindows();
             return processSet;
         }
         

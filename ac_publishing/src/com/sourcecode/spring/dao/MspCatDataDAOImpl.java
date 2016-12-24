@@ -57,7 +57,7 @@ public class MspCatDataDAOImpl implements MspCatDataDAO{
 
 		@Override
     public synchronized int saveMspUrlsToBeInserted(Set<MspElectronics> toBeInserted) {
-       try{
+       /*try{
 			 br = new BufferedWriter(new FileWriter(new File("C:\\tmp\\a.txt"),true));
 
     	     	   for(MspElectronics prodUrl : toBeInserted){
@@ -71,9 +71,9 @@ public class MspCatDataDAOImpl implements MspCatDataDAO{
        }catch(Exception e){
     	   e.printStackTrace();
     	   return 0;
-       }
+       }*/
     	
-        /*try{
+        try{
             session = this.sessionFactory.openSession();
             int i = 1;
             for(MspElectronics prodUrl : toBeInserted){
@@ -88,7 +88,7 @@ public class MspCatDataDAOImpl implements MspCatDataDAO{
             return 0;
         }finally{
             session.close();
-        } */
+        } 
     }
     
        
