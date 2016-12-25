@@ -107,7 +107,7 @@ public class AmazonProductPriceUpdater {
 			for(String productId:productSet){
 				count ++;
 				String amazonPrdId= productId;
-				String updatedPrice = sampel.getPrice("you id", "your key", "tag-21", amazonPrdId);
+				String updatedPrice = sampel.getPrice("AKIAIFWKPIPO5WHWWWAA", "obNfhGF28XQzRBQhiD3WdUXpSo4NLjnOD+jDtUUW", "aapcompare0f-21", amazonPrdId);
 				Thread.sleep(1000);
 				String price = updatedPrice.replaceAll("\\D+.","");
 

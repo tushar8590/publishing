@@ -47,7 +47,7 @@ public class CategoryMainUrl {
     }
 
     public void setFirstPageUrl(String firstPageUrl) {
-        this.firstPageUrl = firstPageUrl;
+        this.firstPageUrl = firstPageUrl.trim();
     }
 
     public String getSecondPageUrl() {
@@ -55,7 +55,7 @@ public class CategoryMainUrl {
     }
 
     public void setSecondPageUrl(String secondPageUrl) {
-        this.secondPageUrl = secondPageUrl;
+        this.secondPageUrl = secondPageUrl.trim();
     }
 
     public int getTotalPages() {

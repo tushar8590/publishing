@@ -66,9 +66,9 @@ public class MSPUrlExtractor {
      * 6. s_local.removeAll(s_msp_temp); such that s_local contains all the URLs to be deleted from the db
      */
     
-    private Set<MspProductUrl> s_msp;
+    private Set<MspProductUrl> s_msp = new LinkedHashSet<>();
    
-    private Set<MspProductUrl> s_local; // data fron local db
+    private Set<MspProductUrl> s_local = new LinkedHashSet<>(); // data fron local db
     
     private Map<String, List<String>> urlMap;
     
@@ -87,7 +87,7 @@ public class MSPUrlExtractor {
     
     private void prepareDatabaseListOfUrls(List<String> sections) {
         for (String section : sections)
-            s_local = new LinkedHashSet(categoryService.getExistingURLList(section));
+            s_local.addAll(categoryService.getExistingURLList(section));
         
     }
     
@@ -102,7 +102,7 @@ public class MSPUrlExtractor {
         
         
         ExecutorService executor = Executors.newFixedThreadPool(10);
-        s_msp = new LinkedHashSet<>();
+       
         
         Set<Future<Set<MspProductUrl>>> futureSet = new HashSet<Future<Set<MspProductUrl>>>();
         urlMap.forEach((k, v) -> {

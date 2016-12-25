@@ -72,7 +72,7 @@ public class FetchMaxPageNumberForCategory {
                 
                 String dbCategory =rs.getString("section");
 
-                String url =rs.getString("first_page_url");
+                String url =rs.getString("first_page_url").trim();
                 
                 
 
