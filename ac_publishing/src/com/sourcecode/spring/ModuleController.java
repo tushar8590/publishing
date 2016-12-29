@@ -28,6 +28,8 @@ import com.sourcecode.spring.model.User;
 import com.sourcecode.spring.service.CategoryService;
 import com.sourcecode.standalone.AmazonProductPriceUpdater;
 import com.sourcecode.standalone.MspUrlResolver;
+import com.sourcecode.standalone.PriceUpdater;
+import com.sourcecode.standalone.PriceUpdaterFactory;
 
 
 
@@ -115,8 +117,9 @@ FunctionConstants.priceUpdaterOthers);
     	ModelAndView model = new ModelAndView();
     	 model.addObject("processName", "Cat Data Extractor");
          model.setViewName("ProcessRunning");
-         AmazonProductPriceUpdater amazonUpdater = new AmazonProductPriceUpdater();
-         amazonUpdater.execute(priceUpdater.getUpdaterType());
+        PriceUpdater priceUpdaterJob =  PriceUpdaterFactory.getPriceUpdater(priceUpdater.getUpdaterName());
+        priceUpdaterJob.execute(priceUpdater.getUpdaterType());
+         
          return model;
     }
     

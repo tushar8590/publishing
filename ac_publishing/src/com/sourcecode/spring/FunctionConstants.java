@@ -8,9 +8,9 @@ public class FunctionConstants {
     public static String downloadImages = "Download Images";
     
     public static String priceUpdater = "Price Updater";
-    public static String priceUpdaterFlipkart = "Flipkart ";
-    public static String priceUpdaterSnapdeal = "Snapdeal ";
-    public static String priceUpdaterAmazon = "Amazon ";
-    public static String priceUpdaterOthers = "Others ";
+    public static String priceUpdaterFlipkart = "Flipkart";
+    public static String priceUpdaterSnapdeal = "Snapdeal";
+    public static String priceUpdaterAmazon = "Amazon";
+    public static String priceUpdaterOthers = "Others";
     
 }

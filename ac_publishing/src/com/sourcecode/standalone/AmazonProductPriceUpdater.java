@@ -24,8 +24,8 @@ import com.sourcecode.spring.PriceUpdatertype;
 
 public class AmazonProductPriceUpdater extends PriceUpdater{
 
-	
-	public static void execute(PriceUpdatertype updaterType) {
+	@Override
+	public  void execute(PriceUpdatertype updaterType) {
 		ItemLookupSample sampel = new ItemLookupSample();
 
 		List pidList = new ArrayList<>(); 

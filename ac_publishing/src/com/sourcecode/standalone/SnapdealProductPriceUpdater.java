@@ -22,19 +22,12 @@ import java.util.Set;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class HttpURLConnectionSD {
+import com.sourcecode.spring.PriceUpdatertype;
 
+public class SnapdealProductPriceUpdater extends PriceUpdater{
 
-	//private final String USER_AGENT = "Mozilla/5.0";
-
-	private static String host = "jdbc:mysql://localhost:3306/aapcompare";
-	private static String userName = "root";
-	private static String password = "";
-	private static Connection con;
-	private static ResultSet rs;
-
-
-	public static void main(String arg[])
+	@Override
+	public  void execute(PriceUpdatertype updaterType)
 	{
 		System.out.println(System.currentTimeMillis());
 		
@@ -68,8 +61,11 @@ public class HttpURLConnectionSD {
 
 			con.setAutoCommit(false);
 
-			String sql = "select product_id, flipkart_product_id from msp_electronics where website = 'snapdeal' AND resolved_url NOT LIKE '%www.mysmartprice.com%' and flipkart_product_id is not null";
-
+			String sql = null;
+			if(updaterType.equals(PriceUpdatertype.WEEKLY))
+				 sql = "select product_id, flipkart_product_id from msp_electronics where website = 'snapdeal' AND resolved_url NOT LIKE '%www.mysmartprice.com%' and flipkart_product_id is not null";
+			else
+				 sql = "select product_id, flipkart_product_id from msp_electronics where website = 'snapdeal' AND resolved_url NOT LIKE '%www.mysmartprice.com%' and flipkart_product_id is not null  and section in ('mobiles','tablets','laptops')";
 			rs = con.createStatement().executeQuery(sql);
 			Map<String, String> mspSnapdealProductMap = new HashMap<>();
 

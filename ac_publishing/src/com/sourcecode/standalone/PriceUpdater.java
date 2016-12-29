@@ -3,7 +3,9 @@ package com.sourcecode.standalone;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
-public class PriceUpdater {
+import com.sourcecode.spring.PriceUpdatertype;
+
+public abstract class PriceUpdater {
 	 static String host_prd = "jdbc:mysql://209.99.16.94:3306/aapcow9a_dbaapcompare9";
 	 static String userName_prd = "aapcow9a_adbuser";
 	 static String password_prd = "Admin@1234$";
@@ -15,4 +17,5 @@ public class PriceUpdater {
 	 static String password = "";
 	 static Connection con;
 	 static ResultSet rs;
+	 public abstract void execute(PriceUpdatertype updaterType);
 }

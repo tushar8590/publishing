@@ -21,19 +21,13 @@ import java.util.Set;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-public class FetchFlipkartSingleProductdata {
+import com.sourcecode.spring.PriceUpdatertype;
+
+public class FlipkartProductPriceUpdater extends PriceUpdater{
 
 
-	//private final String USER_AGENT = "Mozilla/5.0";
-
-	private static String host = "jdbc:mysql://localhost:3306/aapcompare";
-	private static String userName = "root";
-	private static String password = "";
-	private static Connection con;
-	private static ResultSet rs;
-	
-
-	public static void main(String arg[])
+	@Override
+	public  void execute(PriceUpdatertype updaterType)
 	{
 		List pidList = new ArrayList<>(); 
 		BufferedWriter writer = null;
@@ -65,9 +59,12 @@ public class FetchFlipkartSingleProductdata {
 			con = DriverManager.getConnection(host, userName, password);
 
 			con.setAutoCommit(false);
-
-			String sql = "select product_id, flipkart_product_id from msp_electronics where website = 'flipkart' AND resolved_url NOT LIKE '%www.mysmartprice.com%' and flipkart_product_id is not null ";
-
+			String sql = null;
+			if(updaterType.equals(PriceUpdatertype.WEEKLY))
+					 sql = "select product_id, flipkart_product_id from msp_electronics where website = 'flipkart' AND resolved_url NOT LIKE '%www.mysmartprice.com%' and flipkart_product_id is not null ";
+			else
+				sql = "select product_id, flipkart_product_id from msp_electronics where website = 'flipkart' AND resolved_url NOT LIKE '%www.mysmartprice.com%' and flipkart_product_id is not null  and section in ('mobiles','tablets','laptops')";
+			
 			rs = con.createStatement().executeQuery(sql);
 			Map<String, String> mspSnapdealProductMap = new HashMap<>();
 
