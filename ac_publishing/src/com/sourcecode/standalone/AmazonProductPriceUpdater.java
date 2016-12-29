@@ -20,21 +20,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.evocatus.amazonclient.ItemLookupSample;
+import com.sourcecode.spring.PriceUpdatertype;
 
-public class AmazonProductPriceUpdater {
+public class AmazonProductPriceUpdater extends PriceUpdater{
 
-	private static String host_prd = "jdbc:mysql://209.99.16.94:3306/aapcow9a_dbaapcompare9";
-	private static String userName_prd = "aapcow9a_adbuser";
-	private static String password_prd = "Admin@1234$";
-
-
-
-	private static String host = "jdbc:mysql://localhost:3306/aapcompare";
-	private static String userName = "root";
-	private static String password = "";
-	private static Connection con;
-	private static ResultSet rs;
-	public static void main(String[] args) {
+	
+	public static void execute(PriceUpdatertype updaterType) {
 		ItemLookupSample sampel = new ItemLookupSample();
 
 		List pidList = new ArrayList<>(); 
@@ -64,9 +55,12 @@ public class AmazonProductPriceUpdater {
 			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection(host, userName, password);
 			con.setAutoCommit(false);
-
-			String sql = "select product_id, flipkart_product_id as asin from msp_electronics where website = 'amazon' AND resolved_url NOT LIKE '%www.mysmartprice.com%' and flipkart_product_id is not null limit 5000";
-
+			String sql = "";      
+			if(updaterType.equals(PriceUpdatertype.WEEKLY))
+				 sql = "select product_id, flipkart_product_id as asin from msp_electronics where website = 'amazon' AND resolved_url NOT LIKE '%www.mysmartprice.com%' and flipkart_product_id is not null limit 5000";
+			else
+				 sql = "select product_id, flipkart_product_id as asin from msp_electronics where website = 'amazon' AND resolved_url NOT LIKE '%www.mysmartprice.com%' and flipkart_product_id is not null limit 5000 and section in ('mobiles','tablets','laptops')";
+			
 			rs = con.createStatement().executeQuery(sql);
 			Map<String, String> mspAmazonProductMap = new HashMap<>();
 

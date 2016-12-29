@@ -21,10 +21,12 @@ import com.sourcecode.spring.job.DownloadImages;
 import com.sourcecode.spring.job.MSPCatDataExtractor;
 import com.sourcecode.spring.job.MSPSpecLoader;
 import com.sourcecode.spring.job.MSPUrlExtractor;
+import com.sourcecode.spring.model.ElectronicsPriceUpdater;
 import com.sourcecode.spring.model.Module;
 import com.sourcecode.spring.model.NewMenu;
 import com.sourcecode.spring.model.User;
 import com.sourcecode.spring.service.CategoryService;
+import com.sourcecode.standalone.AmazonProductPriceUpdater;
 import com.sourcecode.standalone.MspUrlResolver;
 
 
@@ -47,12 +49,22 @@ public class ModuleController {
     @Autowired
     private DownloadImages downloadImages;
 
+    private List<String>optionList =Arrays.asList(FunctionConstants.URLExtractor,FunctionConstants.CatDataExtractor,
+    		FunctionConstants.SpecLoader,
+    		FunctionConstants.urlResolver,FunctionConstants.downloadImages,FunctionConstants.priceUpdater);
+    
+    private List priceUpdaterSelectionList = Arrays.asList(
+    		 FunctionConstants.priceUpdaterFlipkart,
+FunctionConstants.priceUpdaterSnapdeal ,
+FunctionConstants.priceUpdaterAmazon ,
+FunctionConstants.priceUpdaterOthers);
+   private List<PriceUpdatertype> priceUpdaterTypeList = Arrays.asList(PriceUpdatertype.DAILY,PriceUpdatertype.WEEKLY); 
     
     @RequestMapping(value = "loadDashboard")
     public ModelAndView loadDashboard(){
         ModelAndView model = new ModelAndView();
         model.addObject("module",new Module());
-        model.addObject("radioList",Arrays.asList(FunctionConstants.URLExtractor,FunctionConstants.CatDataExtractor,FunctionConstants.SpecLoader,FunctionConstants.urlResolver,FunctionConstants.downloadImages));
+        model.addObject("radioList",optionList);
         model.setViewName("dashboard");
         return model;
     }
@@ -87,11 +99,26 @@ public class ModuleController {
             model.addObject("categoryList",categoryService.getCategoryList());
             model.addObject("modelName", FunctionConstants.downloadImages);
             model.setViewName("elecModule");
+        }else if(module.getModuleName().equalsIgnoreCase(FunctionConstants.priceUpdater)){
+            model.addObject("electronicsPriceUpdater",new ElectronicsPriceUpdater());
+            model.addObject("updaterSelectionList",priceUpdaterSelectionList);
+            model.addObject("updaterTypeList",priceUpdaterTypeList);
+            model.setViewName("priceUpdater");
         }
         
         return model;
     }
     
+    
+    @RequestMapping(value = "startPriceUpdaterAction", method=RequestMethod.POST)
+    public ModelAndView startPriceUpdaterAction(@ModelAttribute("electronicsPriceUpdater") ElectronicsPriceUpdater priceUpdater) {
+    	ModelAndView model = new ModelAndView();
+    	 model.addObject("processName", "Cat Data Extractor");
+         model.setViewName("ProcessRunning");
+         AmazonProductPriceUpdater amazonUpdater = new AmazonProductPriceUpdater();
+         amazonUpdater.execute(priceUpdater.getUpdaterType());
+         return model;
+    }
     
     @RequestMapping(value = "startELectronicsDataUpdate", method=RequestMethod.POST)
     public ModelAndView startELectronicsDataUpdate(@ModelAttribute("newMenuAttribute") NewMenu menu) throws IOException{
